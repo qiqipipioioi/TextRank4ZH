@@ -149,12 +149,12 @@ class TextRank4Keyword(object):
         keywords_set = set(self.get_keywords(num=keywords_num, word_min_len = 1))
             
         keyphrases = set()
-        one = []
         for sentence_list in self.words_no_filter:
+            one = []
             for word in sentence_list:
                 # print '/'.join(one)
-                # print word
                 if word in keywords_set:
+                    word = word.lower()
                     one.append(word)
                 else:
                     if len(one)>1:
@@ -162,9 +162,12 @@ class TextRank4Keyword(object):
                         one = []
                         continue
                     one = []
-                    
-        return [phrase for phrase in keyphrases 
-                if self.text.count(phrase) >= min_occur_num]
+        self.text = self.text.lower()
+#   相对于原作者添加的部分,用于保持输出按照出现次数递减排列
+        Phraselist = [[phrase, self.text.count(phrase)] for phrase in keyphrases if self.text.count(phrase) >= min_occur_num]
+        Phraselist = sorted(Phraselist, key = lambda x:x[1],reverse=True)
+        result = map(lambda x:x[0],Phraselist)
+        return result
 
 
 if __name__ == '__main__':
@@ -182,6 +185,3 @@ if __name__ == '__main__':
     
     for phrase in tr4w.get_keyphrases(keywords_num=20, min_occur_num= 2):
         print phrase
-        
-
-        
